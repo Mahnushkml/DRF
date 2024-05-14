@@ -32,7 +32,7 @@ class UserProfileManager(BaseUserManager):
 
         return user
 
-
+# test
 
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     
