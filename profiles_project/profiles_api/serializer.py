@@ -7,16 +7,32 @@ class HelloSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=10)
 
 class UserSerializer(serializers.ModelSerializer):
-    """Serializes a name field for testing our APIView"""
-    test = serializers.SerializerMethodField()
+    """Serializes a user profile object"""
+
+    # test = serializers.SerializerMethodField()
     class Meta:
         model=UserProfile
-        fields = ('name', 'email','is_active')
-        read_only_fields = ("date","username")
+        fields = ('id', 'email','name', 'password')
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+                'style': {'input_type': 'password'}
+            }
+        }
+        # read_only_fields = ("date","username")
 
     def get_test(self):
         pass
-    def create(self, validated_data):
-        validated_data["date"] = datetime.datetime.now()
 
-        return super().create(validated_data)
+    def create(self, validated_data):
+        """Create and return a new user"""
+        user = UserProfile.objects.create_user(
+            email = validated_data['email'],
+            name = validated_data['name'],
+            password = validated_data['password']
+
+        )
+
+        # validated_data["date"] = datetime.datetime.now()
+
+        return user

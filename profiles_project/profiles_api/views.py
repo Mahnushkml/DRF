@@ -3,7 +3,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
+
 from profiles_api.serializer import HelloSerializer
+from profiles_api import serializer
+from profiles_api import models
+from profiles_api import permissions
 
 # Create your views here.
 
@@ -43,6 +48,8 @@ class Hello_API(APIView):
 
 class HelloViewSet(viewsets.ViewSet):
     """Test API ViewSet"""
+    serializer_class = serializer.HelloSerializer
+    
     def list(self, request):
         "return a hello message "
         a_viewset = [
@@ -54,7 +61,7 @@ class HelloViewSet(viewsets.ViewSet):
     
     def create(self, request):
         """Create a new Hello message"""
-        ser2 = HelloSerializer(data=request.data)
+        ser2 = self.serializer_class(data=request.data)
 
         if ser2.is_valid():
             name = ser2.validated_data.get('name')
@@ -82,5 +89,14 @@ class HelloViewSet(viewsets.ViewSet):
     def defstroy(self, request, pk=None):
         """Handle removing of an object"""
         return Response({'http_method':'DELETE'})
+    
+
+class UserProfileViewSet(viewsets.ModelViewSet): 
+    """Handle creating and updating profiles"""
+    serializer_class = serializer.UserSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (permissions.UpdateOwnProfile,)
+    
 
 
