@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db import models
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +8,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework import filters
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
 
 
 from profiles_api.serializer import HelloSerializer
@@ -110,3 +113,18 @@ class UserLoginApiView(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
+class ProfileFeedItemViewSet(viewsets.ModelViewSet):
+    """Handle creating, reading and updating profile feed items """
+
+    # don't forget put , after TokenAuthentication
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializer.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+    permission_classes = (
+        permissions.UpdateOwnStatus,
+        IsAuthenticated
+    )
+
+    def perform_create(self, serializer):
+        """Sets the user profile to the logged in user"""
+        serializer.save(user_profile = self.request.user)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserProfile
+from .models import UserProfile , ProfileFeedItem
 import datetime
 
 class HelloSerializer(serializers.Serializer):
@@ -36,3 +36,11 @@ class UserSerializer(serializers.ModelSerializer):
         # validated_data["date"] = datetime.datetime.now()
 
         return user
+
+class ProfileFeedItemSerializer(serializers.ModelSerializer):
+    """Serializes profile feed items"""
+
+    class Meta:
+        model = ProfileFeedItem
+        fields = ('id','user_profile','status_text', 'created_on')
+        extra_kwargs = {'user_profile':{'read_only': True}}
