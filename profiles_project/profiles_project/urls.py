@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from profiles_api import urls
+from assets import urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(urls)),
+    # path('api/', include(assets.urls)),
+    
+    
 
 ]
